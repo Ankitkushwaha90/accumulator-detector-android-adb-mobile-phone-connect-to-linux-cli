@@ -1,0 +1,80 @@
+# Accumulator Detector Setup for Redmi 9 on Parrot Linux
+
+## Prerequisites
+1. **ADB Installation**: Ensure ADB (Android Debug Bridge) is installed on your Parrot Linux system. Use the following command to install:
+   ```bash
+   sudo apt update && sudo apt install android-tools-adb -y
+  ```
+2.# Enable USB Debugging on Redmi 9
+
+1. Go to **Settings > About Phone**.
+2. Tap **MIUI Version** 7 times to enable Developer Options.
+3. Navigate to **Settings > Additional Settings > Developer Options**.
+4. Enable **USB Debugging**.
+5. Connect your device via USB cable.
+
+---
+
+## Detect and Connect Android Device
+
+### Step 1: Verify Device Connection
+Run the following command to verify if your device is connected:
+
+```bash
+adb devices
+```
+If the device is connected, you'll see its serial number listed.
+If t shows unauthorized, confirm the debugging prompt on the phone.
+### Step 2: Access Battery Information
+Once connected, you can retrieve the accumulator (battery) details:
+
+```bash
+adb shell dumpsys battery
+```
+Output Example:
+```plaintext
+Current Battery Service state:
+  AC powered: false
+  USB powered: true
+  Wireless powered: false
+  Max charging current: 1500000
+  Max charging voltage: 5000000
+  Charge counter: 123456
+  status: 2
+  health: 2
+  present: true
+  level: 87
+  scale: 100
+  voltage: 4100
+  temperature: 290
+  technology: Li-ion
+level: Current battery percentage.
+temperature: Battery temperature in tenths of a degree Celsius.
+voltage: Current battery voltage in mV.
+```
+### Step 3: Monitor Real-Time Battery Status
+You can use a loop to monitor battery status in real time:
+
+```bash
+while true; do adb shell dumpsys battery | grep -E "level|voltage|temperature"; sleep 5; done
+```
+**Troubleshooting**
+### 1.ADB Not Detecting Device:
+
+Restart the adb server:
+```bash
+adb kill-server
+adb start-server
+```
+Ensure USB debugging is enabled on the device.
+### 2.Permission Issues:
+
+Add your user to the plugdev group:
+```bash
+sudo usermod -aG plugdev $USER
+```
+Log out and back in to apply the changes.
+## Notes
+You can also explore GUI-based tools like GSConnect or KDE Connect for easier monitoring.
+For advanced control, consider using tools like AccuBattery (on the device) or scripting custom automation via ADB.
+Happy hacking!
